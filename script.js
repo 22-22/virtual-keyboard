@@ -103,7 +103,7 @@ function createKeys() {
             area.focus();
           } else {
             area.value = area.value.substring(0, startPos - 1)
-            + area.value.substring(endPos, area.value.length);
+                            + area.value.substring(endPos, area.value.length);
             area.selectionStart = startPos - 1;
             area.selectionEnd = endPos - 1;
             area.focus();
@@ -115,7 +115,7 @@ function createKeys() {
           const startPos = area.selectionStart;
           const endPos = area.selectionEnd;
           area.value = area.value.substring(0, startPos)
-          + area.value.substring(endPos + 1, area.value.length);
+                        + area.value.substring(endPos + 1, area.value.length);
           area.selectionStart = startPos;
           area.selectionEnd = endPos;
           area.focus();
@@ -187,13 +187,17 @@ document.addEventListener('keydown', (event) => {
       event.preventDefault();
       break;
     case 'Backspace':
-      area.value = area.value.substring(0, startPos - 1)
-      + area.value.substring(endPos, area.value.length);
-      area.setSelectionRange(startPos - 1, startPos - 1);
+      if (startPos === 0 && endPos === 0) {
+        area.focus();
+      } else {
+        area.value = area.value.substring(0, startPos - 1)
+                    + area.value.substring(endPos, area.value.length);
+        area.setSelectionRange(startPos - 1, startPos - 1);
+      }
       break;
     case 'Delete':
       area.value = area.value.substring(0, startPos)
-      + area.value.substring(endPos + 1, area.value.length);
+                + area.value.substring(endPos + 1, area.value.length);
       area.setSelectionRange(startPos, startPos);
       break;
     case 'CapsLock':
