@@ -124,19 +124,25 @@ function createKeys() {
             case 'Backspace':
                 key.classList.add('keyboard__key-wide');
                 key.addEventListener('mousedown', () => {
-                    console.log(area.selectionStart)
-                    console.log(area.selectionEnd)
-                   
-                   area.value = area.value.substr(0, area.value.length - 1);
-                    //   area.value = area.value.substring(0, area.selectionStart - 1) + area.value.substring(area.selectionEnd, area.value.length);
-
-                    //     area.focus();
-                    //     area.setSelectionRange(area.selectionStart , area.selectionStart );  
+                    let startPos = area.selectionStart;
+                    let endPos = area.selectionEnd;
+                    if (area.selectionStart === 0 && area.selectionEnd === 0) {
+                        return;
+                    } else {
+                        area.value = area.value.substring(0, startPos - 1) + area.value.substring(endPos, area.value.length);
+                        area.selectionStart = startPos - 1;
+                        area.selectionEnd = endPos - 1;
+                        area.focus();
+                    }
                 });
                 break;
             case 'Del':
                 key.addEventListener('mousedown', () => {
-                    area.value = area.value.substring(0, area.selectionStart) + area.value.substring(area.selectionEnd + 1, area.value.length);
+                    let startPos = area.selectionStart;
+                    let endPos = area.selectionEnd;
+                    area.value = area.value.substring(0, startPos) + area.value.substring(endPos + 1, area.value.length);
+                    area.selectionStart = startPos;
+                    area.selectionEnd = endPos;
                     area.focus();
                 });
                 break;
@@ -152,9 +158,14 @@ function createKeys() {
                     area.value += ' \n';
                 });
                 break;
+            case 'Tab':
+                key.addEventListener('mousedown', () => {
+                    area.value += '    ';
+                });
+                break;
             case 'Shift':
                 key.addEventListener('mousedown', onShift);
-               key.addEventListener('mouseup', offShift);
+                key.addEventListener('mouseup', offShift);
                 break;
             case 'CapsLock':
                 key.classList.add('keyboard__key-wide');
