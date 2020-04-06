@@ -5,86 +5,92 @@ const shiftLatin = ['~', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', 
 const shiftCyrillic = ['Ё', '!', '\'', '№', ';', '%', ':', '?', '*', '(', ')', '_', '+', 'Backspace', 'Tab', 'Й', 'Ц', 'У', 'К', 'Е', 'Н', 'Г', 'Ш', 'Щ', 'З', 'Х', 'Ъ', '/', 'Del', 'CapsLock', 'Ф', 'Ы', 'В', 'А', 'П', 'Р', 'О', 'Л', 'Д', 'Ж', 'Э', 'Enter', 'Shift', 'Я', 'Ч', 'С', 'М', 'И', 'Т', 'Ь', 'Б', 'Ю', ',', '↑', 'Shift', 'Ctrl', 'Win', 'Alt', ' ', 'Alt', '←', '↓', '→', 'Ctrl'];
 const area = document.createElement('textarea');
 const keys = [];
-let caps = false;
+class Helper {
+  constructor() {
+    this.isAlt = false;
+    this.isControl = false;
+  }
 
-let lang;
-if (localStorage.getItem('language') === 'english') {
-  lang = charsLatin;
-} else {
-  lang = charsCyrillic;
+  capsLock() {
+    if (this.caps === false || typeof this.caps === 'undefined') {
+      document.querySelectorAll('button').forEach((item) => {
+        if (item.textContent.length === 1) {
+          item.textContent = item.textContent.toUpperCase();
+        }
+      });
+
+      this.caps = true;
+    } else {
+      document.querySelectorAll('button').forEach((item) => {
+        if (item.textContent.length === 1) {
+          item.textContent = item.textContent.toLowerCase();
+        }
+      });
+      this.caps = false;
+    }
+  }
+
+  changeLang() {
+    if (this.isEnglish === true) {
+      keys.forEach((item, idx) => {
+        item.textContent = charsCyrillic[idx];
+      });
+      this.isEnglish = false;
+      localStorage.setItem('isEnglish', false);
+    } else {
+      keys.forEach((item, idx) => {
+        item.textContent = charsLatin[idx];
+      });
+      this.isEnglish = true;
+      localStorage.setItem('isEnglish', true);
+    }
+  }
+
+  onShift() {
+    if (this.isEnglish === true) {
+      keys.forEach((item, idx) => {
+        item.textContent = shiftLatin[idx];
+      });
+    } else {
+      keys.forEach((item, idx) => {
+        item.textContent = shiftCyrillic[idx];
+      });
+    }
+  }
+
+  offShift() {
+    if (this.isEnglish === true) {
+      keys.forEach((item, idx) => {
+        item.textContent = charsLatin[idx];
+      });
+    } else {
+      keys.forEach((item, idx) => {
+        item.textContent = charsCyrillic[idx];
+      });
+    }
+  }
 }
 
-function createTextArea() {
+const helper = new Helper();
+
+function addTextArea() {
   area.classList.add('area');
   document.body.append(area);
   area.addEventListener('keydown', (event) => {
     event.preventDefault();
   });
-}
-
-function capsLock() {
-  if (caps === false) {
-    document.querySelectorAll('button').forEach((item) => {
-      if (item.textContent.length === 1) {
-        item.textContent = item.textContent.toUpperCase();
-      }
-    });
-    caps = true;
-  } else {
-    document.querySelectorAll('button').forEach((item) => {
-      if (item.textContent.length === 1) {
-        item.textContent = item.textContent.toLowerCase();
-      }
-    });
-    caps = false;
-  }
-}
-
-function changeLang() {
-  if (localStorage.getItem('language') === 'english') {
-    keys.forEach((item, idx) => {
-      item.textContent = charsCyrillic[idx];
-    });
-    localStorage.setItem('language', 'russian');
-  } else {
-    keys.forEach((item, idx) => {
-      item.textContent = charsLatin[idx];
-    });
-    localStorage.setItem('language', 'english');
-  }
-}
-
-document.addEventListener('keydown', (event) => {
-  if (event.key === 'Control' && 'Alt') {
-    changeLang();
-  }
-});
-
-function onShift() {
-  if (localStorage.getItem('language') === 'english') {
-    keys.forEach((item, idx) => {
-      item.textContent = shiftLatin[idx];
-    });
-  } else {
-    keys.forEach((item, idx) => {
-      item.textContent = shiftCyrillic[idx];
-    });
-  }
-}
-
-function offShift() {
-  if (localStorage.getItem('language') === 'english') {
-    keys.forEach((item, idx) => {
-      item.textContent = charsLatin[idx];
-    });
-  } else {
-    keys.forEach((item, idx) => {
-      item.textContent = charsCyrillic[idx];
-    });
-  }
+  area.addEventListener('blur', () => {
+    area.focus();
+  });
 }
 
 function createKeys() {
+  let lang;
+  if (localStorage.getItem('isEnglish') === true || typeof localStorage.getItem('isEnglish') === 'undefined') {
+    lang = charsLatin;
+  } else {
+    lang = charsCyrillic;
+  }
   lang.forEach((item, idx) => {
     // for all keys
     const key = document.createElement('button');
@@ -103,7 +109,7 @@ function createKeys() {
             area.focus();
           } else {
             area.value = area.value.substring(0, startPos - 1)
-                            + area.value.substring(endPos, area.value.length);
+              + area.value.substring(endPos, area.value.length);
             area.selectionStart = startPos - 1;
             area.selectionEnd = endPos - 1;
             area.focus();
@@ -115,7 +121,7 @@ function createKeys() {
           const startPos = area.selectionStart;
           const endPos = area.selectionEnd;
           area.value = area.value.substring(0, startPos)
-                        + area.value.substring(endPos + 1, area.value.length);
+            + area.value.substring(endPos + 1, area.value.length);
           area.selectionStart = startPos;
           area.selectionEnd = endPos;
           area.focus();
@@ -139,12 +145,12 @@ function createKeys() {
         });
         break;
       case 'Shift':
-        key.addEventListener('mousedown', onShift);
-        key.addEventListener('mouseup', offShift);
+        key.addEventListener('mousedown', helper.onShift);
+        key.addEventListener('mouseup', helper.offShift);
         break;
       case 'CapsLock':
         key.classList.add('keyboard__key-wide');
-        key.addEventListener('mousedown', capsLock);
+        key.addEventListener('mousedown', helper.capsLock);
         break;
       default:
         key.addEventListener('mousedown', (event) => {
@@ -191,17 +197,17 @@ document.addEventListener('keydown', (event) => {
         area.focus();
       } else {
         area.value = area.value.substring(0, startPos - 1)
-                    + area.value.substring(endPos, area.value.length);
+          + area.value.substring(endPos, area.value.length);
         area.setSelectionRange(startPos - 1, startPos - 1);
       }
       break;
     case 'Delete':
       area.value = area.value.substring(0, startPos)
-                + area.value.substring(endPos + 1, area.value.length);
+        + area.value.substring(endPos + 1, area.value.length);
       area.setSelectionRange(startPos, startPos);
       break;
     case 'CapsLock':
-      capsLock();
+      helper.capsLock();
       break;
     case ' ':
       area.value += ' ';
@@ -223,12 +229,20 @@ document.addEventListener('keydown', (event) => {
       area.value += '↓';
       break;
     case 'Alt':
+      this.isAlt = true;
       event.preventDefault();
       break;
+    case 'Control':
+      this.isControl = true;
+      break;
     case 'Shift':
-      onShift();
+      helper.onShift();
       break;
     default:
+  }
+
+  if (this.isControl === true && this.isAlt === true) {
+    helper.changeLang();
   }
 
   document.querySelectorAll('button').forEach((item) => {
@@ -245,13 +259,21 @@ document.addEventListener('keyup', (event) => {
   document.querySelectorAll('button').forEach((item) => {
     item.classList.remove('active');
   });
-
-  if (event.key === 'Shift') {
-    offShift();
+  switch (event.key) {
+    case 'Shift':
+      helper.offShift();
+      break;
+    case 'Control':
+      this.isControl = false;
+      break;
+    case 'Alt':
+      this.isAlt = false;
+      break;
+    default:
   }
 });
 
 window.addEventListener('DOMContentLoaded', () => {
-  createTextArea();
+  addTextArea();
   createKeyboard();
 });
