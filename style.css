@@ -11,7 +11,7 @@ body {
     margin-bottom: 20px;
     margin-top: 30px;
     resize: none;
-    border-radius: 10px;
+    border-radius: 5px;
     background-color: floralwhite;
 }
 
@@ -22,7 +22,7 @@ body {
     box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
     max-width: 1050px;
     margin: auto;
-    border-radius: 10px;
+    border-radius: 5px;
 }
 
 .container {
@@ -35,7 +35,7 @@ body {
     height: 45px;
     max-width: 70px;
     background-color: rgb(30, 144, 255, 0.5);
-    border-radius: 10px;
+    border-radius: 5px;
     font-size: 1.2rem;
     font-family: Arial, Helvetica, sans-serif;
     color: rgb(1, 65, 1);
@@ -59,11 +59,11 @@ body {
 }
 
 .key:hover {
-    transform: scale(1.1);
+    transform: scale(1.03);
 }
 
 .key:active {
-    transform: scale(1.1);    
+    transform: scale(1.03);    
     background-color: greenyellow;
 }
 
