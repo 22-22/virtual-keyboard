@@ -21,7 +21,6 @@ const shiftCyrillic = ['Ё', '!', '\'', '№', ';', '%', ':', '?', '*', '(', ')'
 const area = document.createElement('textarea');
 const keysContainer = [];
 
-
 class Helper {
   constructor() {
     this.isAlt = false;
@@ -46,7 +45,6 @@ class Helper {
       this.caps = false;
     }
   }
-
 
   changeLang() {
     if (this.isEnglish === true) {
@@ -91,15 +89,76 @@ class Helper {
 
 const helper = new Helper();
 
-function addTextArea() {
-  area.classList.add('area');
-  document.body.append(area);
-  area.addEventListener('keydown', (event) => {
-    event.preventDefault();
+// key handlers
+function handleSymbols() {
+  key.addEventListener('mousedown', (event) => {
+    if (event.target.tagName === 'BUTTON' && event.target.textContent.length === 1) {
+      area.value += event.target.textContent;
+    }
   });
-  area.addEventListener('blur', () => {
-    area.focus();
+}
+
+function handleBackspace(item) {
+ if (item === 'Backspace') {
+  key.classList.add('keyboard__key-wide');
+  key.addEventListener('mousedown', () => {
+    const startPos = area.selectionStart;
+    const endPos = area.selectionEnd;
+    if (area.selectionStart === 0 && area.selectionEnd === 0) {
+      area.focus();
+    } else {
+      area.value = area.value.substring(0, startPos - 1)
+        + area.value.substring(endPos, area.value.length);
+      area.selectionStart = startPos - 1;
+      area.selectionEnd = endPos - 1;
+      area.focus();
+    }
   });
+ }
+}
+
+function handleDelete(item) {
+  if (item === 'Del') {
+    key.addEventListener('mousedown', () => {
+      const startPos = area.selectionStart;
+      const endPos = area.selectionEnd;
+      area.value = area.value.substring(0, startPos)
+        + area.value.substring(endPos + 1, area.value.length);
+      area.selectionStart = startPos;
+      area.selectionEnd = endPos;
+      area.focus();
+    });
+  }
+}
+
+function handleOtherKeys(item) {
+  switch (item) {
+    case ' ':
+      key.classList.add('keyboard__key-widest');
+      key.addEventListener('mousedown', () => {
+        area.value += ' ';
+      });
+      break;
+    case 'Enter':
+      key.classList.add('keyboard__key-wide');
+      key.addEventListener('mousedown', () => {
+        area.value += ' \n';
+      });
+      break;
+    case 'Tab':
+      key.addEventListener('mousedown', () => {
+        area.value += '    ';
+      });
+      break;
+    case 'Shift':
+      key.addEventListener('mousedown', helper.onShift);
+      key.addEventListener('mouseup', helper.offShift);
+      break;
+    case 'CapsLock':
+      key.classList.add('keyboard__key-wide');
+      key.addEventListener('mousedown', helper.toggleCapsLock);
+      break;
+  }
 }
 
 function createKeys() {
@@ -110,77 +169,19 @@ function createKeys() {
     lang = charsCyrillic;
   }
   lang.forEach((item, idx) => {
-    // for all keys
-    const key = document.createElement('button');
+    key = document.createElement('button');
     key.setAttribute('type', 'button');
     key.setAttribute('id', `${keyCodes[idx]}`);
     key.classList.add('key');
     key.textContent = item;
-
-    switch (item) {
-      case 'Backspace':
-        key.classList.add('keyboard__key-wide');
-        key.addEventListener('mousedown', () => {
-          const startPos = area.selectionStart;
-          const endPos = area.selectionEnd;
-          if (area.selectionStart === 0 && area.selectionEnd === 0) {
-            area.focus();
-          } else {
-            area.value = area.value.substring(0, startPos - 1)
-              + area.value.substring(endPos, area.value.length);
-            area.selectionStart = startPos - 1;
-            area.selectionEnd = endPos - 1;
-            area.focus();
-          }
-        });
-        break;
-      case 'Del':
-        key.addEventListener('mousedown', () => {
-          const startPos = area.selectionStart;
-          const endPos = area.selectionEnd;
-          area.value = area.value.substring(0, startPos)
-            + area.value.substring(endPos + 1, area.value.length);
-          area.selectionStart = startPos;
-          area.selectionEnd = endPos;
-          area.focus();
-        });
-        break;
-      case ' ':
-        key.classList.add('keyboard__key-widest');
-        key.addEventListener('mousedown', () => {
-          area.value += ' ';
-        });
-        break;
-      case 'Enter':
-        key.classList.add('keyboard__key-wide');
-        key.addEventListener('mousedown', () => {
-          area.value += ' \n';
-        });
-        break;
-      case 'Tab':
-        key.addEventListener('mousedown', () => {
-          area.value += '    ';
-        });
-        break;
-      case 'Shift':
-        key.addEventListener('mousedown', helper.onShift);
-        key.addEventListener('mouseup', helper.offShift);
-        break;
-      case 'CapsLock':
-        key.classList.add('keyboard__key-wide');
-        key.addEventListener('mousedown', helper.toggleCapsLock);
-        break;
-      default:
-        key.addEventListener('mousedown', (event) => {
-          if (event.target.tagName === 'BUTTON' && event.target.textContent.length === 1) {
-            area.value += event.target.textContent;
-          }
-        });
-        break;
-    }
+    
+    handleSymbols();
+    handleBackspace(item);
+    handleDelete(item);
+    handleOtherKeys(item);
+   
     keysContainer.push(key);
   });
-
   return keysContainer;
 }
 
@@ -199,6 +200,17 @@ function createKeyboard() {
   });
   document.body.append(keyboard);
   keyboard.insertAdjacentHTML('afterend', '<div class="comment">Change language: Ctrl + Alt<br>Made on Windows</div>');
+}
+
+function addTextArea() {
+  area.classList.add('area');
+  document.body.append(area);
+  area.addEventListener('keydown', (event) => {
+    event.preventDefault();
+  });
+  area.addEventListener('blur', () => {
+    area.focus();
+  });
 }
 
 document.addEventListener('keydown', (event) => {
@@ -227,6 +239,9 @@ document.addEventListener('keydown', (event) => {
       break;
     case 'CapsLock':
       helper.toggleCapsLock();
+      break;
+    case ' ':
+      event.preventDefault();
       break;
     case 'Tab':
       area.value += '    ';
