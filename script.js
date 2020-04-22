@@ -28,22 +28,12 @@ class Helper {
   }
 
   toggleCapsLock() {
-    if (!this.caps) {
-      document.querySelectorAll('button').forEach((item) => {
-        if (item.textContent.length === 1) {
-          item.textContent = item.textContent.toUpperCase();
-        }
-      });
-
-      this.caps = true;
-    } else {
-      document.querySelectorAll('button').forEach((item) => {
-        if (item.textContent.length === 1) {
-          item.textContent = item.textContent.toLowerCase();
-        }
-      });
-      this.caps = false;
-    }
+    this.caps = !this.caps;
+    document.querySelectorAll('button').forEach((item) => {
+      if (item.textContent.length === 1) {
+        item.textContent = this.caps ? item.textContent.toUpperCase() : item.textContent.toLowerCase();
+      }
+    });
   }
 
   changeLang() {
