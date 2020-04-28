@@ -191,9 +191,7 @@ function createKeyboard() {
 function addTextArea() {
   area.classList.add('area');
   document.body.append(area);
-  area.addEventListener('keydown', (event) => {
-    area.readOnly = true;
-  });
+  area.readOnly = true;
   area.addEventListener('blur', () => {
     area.focus();
   });
