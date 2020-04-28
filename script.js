@@ -52,7 +52,7 @@ class Helper {
     }
   }
 
-  onShift() {
+  onShiftPressed() {
     if (this.isEnglish === true) {
       keysContainer.forEach((item, idx) => {
         item.textContent = shiftLatin[idx];
@@ -64,7 +64,7 @@ class Helper {
     }
   }
 
-  offShift() {
+  onShiftReleased() {
     if (this.isEnglish === true) {
       keysContainer.forEach((item, idx) => {
         item.textContent = charsLatin[idx];
@@ -121,36 +121,6 @@ function handleDelete(item) {
   }
 }
 
-function handleOtherKeys(item) {
-  switch (item) {
-    case ' ':
-      key.classList.add('keyboard__key-widest');
-      key.addEventListener('mousedown', () => {
-        area.value += ' ';
-      });
-      break;
-    case 'Enter':
-      key.classList.add('keyboard__key-wide');
-      key.addEventListener('mousedown', () => {
-        area.value += ' \n';
-      });
-      break;
-    case 'Tab':
-      key.addEventListener('mousedown', () => {
-        area.value += '    ';
-      });
-      break;
-    case 'Shift':
-      key.addEventListener('mousedown', helper.onShift);
-      key.addEventListener('mouseup', helper.offShift);
-      break;
-    case 'CapsLock':
-      key.classList.add('keyboard__key-wide');
-      key.addEventListener('mousedown', helper.toggleCapsLock);
-      break;
-  }
-}
-
 function createKeys() {
   let lang;
   if (localStorage.getItem('isEnglish') === true || typeof localStorage.getItem('isEnglish') === 'undefined') {
@@ -164,11 +134,37 @@ function createKeys() {
     key.setAttribute('id', `${keyCodes[idx]}`);
     key.classList.add('key');
     key.textContent = item;
-    
     handleSymbols();
     handleBackspace(item);
     handleDelete(item);
-    handleOtherKeys(item);
+    switch (item) {
+      case ' ':
+        key.classList.add('keyboard__key-widest');
+        key.addEventListener('mousedown', () => {
+          area.value += ' ';
+        });
+        break;
+      case 'Enter':
+        key.classList.add('keyboard__key-wide');
+        key.addEventListener('mousedown', () => {
+          area.value += ' \n';
+        });
+        break;
+      case 'Tab':
+        key.addEventListener('mousedown', () => {
+          area.value += '    ';
+        });
+        break;
+      case 'Shift':
+        key.addEventListener('mousedown', helper.onShiftPressed);
+        key.addEventListener('mouseup', helper.onShiftReleased);
+        break;
+      case 'CapsLock':
+        key.classList.add('keyboard__key-wide');
+        key.addEventListener('mousedown', helper.toggleCapsLock);
+        break;
+      default:
+    }
    
     keysContainer.push(key);
   });
@@ -256,7 +252,7 @@ document.addEventListener('keydown', (event) => {
       this.isControl = true;
       break;
     case 'Shift':
-      helper.onShift();
+      helper.onShiftPressed();
       break;
     default:
   }
@@ -275,7 +271,7 @@ document.addEventListener('keyup', (event) => {
   document.querySelector(`#${event.code}`).classList.remove('active');
   switch (event.key) {
     case 'Shift':
-      helper.offShift();
+      helper.onShiftReleased();
       break;
     case 'Control':
       this.isControl = false;
