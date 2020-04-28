@@ -192,7 +192,7 @@ function addTextArea() {
   area.classList.add('area');
   document.body.append(area);
   area.addEventListener('keydown', (event) => {
-    event.preventDefault();
+    area.readOnly = true;
   });
   area.addEventListener('blur', () => {
     area.focus();
